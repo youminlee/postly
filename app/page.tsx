@@ -1,103 +1,131 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState } from "react";
+
+export default function Page() {
+  const [keywords, setKeywords] = useState("");
+  const [inputContent, setInputContent] = useState("");
+  const [generatedContent, setGeneratedContent] = useState("콘텐츠 생성 결과가 없습니다.");
+  const [isLoading, setIsLoading] = useState(false);
+  const [newsArticles, setNewsArticles] = useState<{ title: string; url: string; summary: string }[]>([]);
+
+  const fetchNews = async () => {
+    try {
+      const response = await fetch("/api/news", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keywords: keywords.split(",") }),
+      });
+
+      const data = await response.json();
+      setNewsArticles(data.articles);
+
+
+    } catch (error) {
+      console.error("뉴스 불러오기 실패", error);
+    }
+  };
+
+  const generateContent = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ articles: inputContent }),
+      });
+
+      const data = await response.json();
+      setGeneratedContent(data.post);
+    } catch (error) {
+      setGeneratedContent("콘텐츠 생성 실패 😢");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="min-h-screen bg-gradient-to-tr from-[#f4ebff] via-[#e3f2fd] to-[#fffaf0] p-8 pb-16 font-sans">
+      <div className="text-3xl font-extrabold mb-6 text-purple-800">Postly</div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* 왼쪽 영역 */}
+        <div className="flex flex-col gap-4 bg-white p-6 rounded-2xl shadow-md h-full">
+          <div>
+            <label className="block text-sm font-semibold text-gray-600 mb-1">키워드</label>
+            <input
+              type="text"
+              placeholder="예: AI, 마케팅 자동화"
+              value={keywords}
+              onChange={(e) => setKeywords(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+
+          <button
+            onClick={fetchNews}
+            className="w-fit px-4 py-2 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition text-sm font-medium"
           >
-            Read our docs
-          </a>
+            🔎 뉴스 불러오기
+          </button>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-600 mb-1">뉴스 요약</label>
+            <div className="w-full h-52 overflow-y-scroll border border-gray-300 rounded-xl p-3 bg-gray-50 text-sm">
+              {newsArticles.length === 0 ? (
+                <p className="text-gray-400">불러온 뉴스가 없습니다.</p>
+              ) : (
+                newsArticles.map((a, idx) => (
+                  <div key={idx} className="mb-4 pb-3 border-b border-gray-200 last:border-b-0">
+                    <div className="flex items-start gap-2 mb-2">
+                      <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
+                        {idx + 1}
+                      </span>
+                      <a
+                        href={a.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-700 font-semibold hover:underline text-sm leading-tight flex-1"
+                      >
+                        {a.title}
+                      </a>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className="mt-2">
+            <label className="block text-sm font-semibold text-gray-600 mb-1">콘텐츠 입력</label>
+            <textarea
+              placeholder="뉴스 내용, 요약문, 아이디어 등을 여기에 붙여넣기..."
+              value={inputContent}
+              onChange={(e) => setInputContent(e.target.value)}
+              className="w-full h-80 p-3 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-400 mb-4"
+            />
+          </div>
+
+          <button
+            onClick={generateContent}
+            disabled={isLoading}
+            className="mt-2 w-full px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-bold text-lg disabled:opacity-50"
+          >
+            ✨ Generate Content
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* 오른쪽 영역 */}
+        <div className="bg-white p-6 rounded-2xl shadow-md">
+          <div className="text-xl font-semibold text-purple-700 mb-3 flex items-center gap-2">
+            📝 생성된 콘텐츠
+            </div>
+            <div
+            className="w-full h-[32rem] overflow-y-scroll p-3 border border-gray-200 rounded-xl bg-gray-50 text-sm text-gray-800 whitespace-pre-wrap"
+            dangerouslySetInnerHTML={{ __html: generatedContent }}
+            />
+            </div>
+      </div>
+    </main>
   );
 }
