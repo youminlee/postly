@@ -1,4 +1,3 @@
-// lib/postGenerator.ts
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
@@ -7,25 +6,25 @@ const openai = new OpenAI({
 
 export async function generatePostFromNews(inputText: string) {
   const prompt = `
-당신은 MegazoneCloud의 CEO를 대신하여 LinkedIn 포스팅을 작성하는 전문가입니다.
+You are an expert LinkedIn post writer creating content on behalf of the CEO of MegazoneCloud.
 
-다음과 같은 스타일로 작성해주세요:
-- 따뜻하고 비전적인 톤
-- 디지털 전환과 혁신에 대한 통찰
-- 파트너나 팀에 대한 감사 표현
-- 전문적이면서도 인간적인 접근
-- 해시태그 포함 (예: #DigitalTransformation #Innovation #MegazoneCloud)
-- 링크는 포함하지 않음
+Write in the following tone and style:
+- Warm, authentic, and forward-looking
+- Insightful but **brief** – aim for impact in under 200 words
+- Reflective of a human-centered leadership voice
+- Reinforce values like "Customer-First Innovation", "Speed with Impact", "One Team", and "Care"
+- Use collective language ("we", "our") to foster unity
+- Include 1–2 specific examples or references if relevant
+- Use plain, concise language (avoid jargon; if needed, explain simply)
+- End with relevant hashtags (e.g. #MegazoneCloud #AI #DigitalTransformation)
 
-다음 내용을 바탕으로 LinkedIn 포스팅을 작성해주세요:
+Write a LinkedIn post in **English** based on the following source content. Keep it thoughtful, but **clear and to the point**:
 
 ${inputText}
-
-포스팅은 한국어로 작성하고, CEO의 관점에서 작성해주세요.
 `.trim()
 
   const completion = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-4o',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.7,
   })
