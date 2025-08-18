@@ -52,7 +52,7 @@ export default function Page() {
         {/* 왼쪽 영역 */}
         <div className="flex flex-col gap-4 bg-white p-6 rounded-2xl shadow-md h-full">
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">키워드</label>
+            <label className="block text-sm font-semibold text-gray-600 mb-1">키워드 입력</label>
             <input
               type="text"
               placeholder="예: AI, 마케팅 자동화"
@@ -70,7 +70,7 @@ export default function Page() {
           </button>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">뉴스 요약</label>
+            <label className="block text-sm font-semibold text-gray-600 mb-1">최신 뉴스</label>
             <div className="w-full h-52 overflow-y-scroll border border-gray-300 rounded-xl p-3 bg-gray-50 text-sm">
               {newsArticles.length === 0 ? (
                 <p className="text-gray-400">불러온 뉴스가 없습니다.</p>
@@ -97,7 +97,7 @@ export default function Page() {
           </div>
 
           <div className="mt-2">
-            <label className="block text-sm font-semibold text-gray-600 mb-1">콘텐츠 입력</label>
+            <label className="block text-sm font-semibold text-gray-600 mb-1">콘텐츠 소스 입력</label>
             <textarea
               placeholder="뉴스 내용, 요약문, 아이디어 등을 여기에 붙여넣기..."
               value={inputContent}
@@ -111,7 +111,7 @@ export default function Page() {
             disabled={isLoading}
             className="mt-2 w-full px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-bold text-lg disabled:opacity-50"
           >
-            ✨ Generate Content
+            ✨ LinkedIn 게시물 작성하기
           </button>
         </div>
 
