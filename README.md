@@ -2,16 +2,22 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+### Environment
+
+1. Create a `.env.local` in the project root based on `.env.local.example`:
+
+```
+OPENAI_API_KEY=your_api_key_here
+# Optional
+OPENAI_MODEL=gpt-4o-mini
+```
+
+2. Restart the dev server after changing env vars.
+
+## Run dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
